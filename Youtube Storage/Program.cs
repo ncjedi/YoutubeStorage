@@ -1002,6 +1002,64 @@ void RenameFile()
     }
 }
 
+//add a note to an existing series
+void AddNote()
+{
+    string peeps = "";
+    string series = "b";
+    string path = "";
+    string noteToWrite = "";
+    string[] currentContents = { "" };
+
+    Console.Clear();
+
+    while (series == "b")
+    {
+        gen.Write("Loading channels...");
+        peeps = ReadPeepsPages();
+
+        if (peeps == "q" || peeps == "b")
+        {
+            Console.Clear();
+            return;
+        }
+
+        Console.Clear();
+
+        gen.Write("Loading series...");
+        series = ReadSeriesPages(peeps);
+
+        if (series == "q")
+        {
+            Console.Clear();
+            return;
+        }
+
+        Console.Clear();
+    }
+
+    path = Path.Combine("YoutubeStorage", Path.Combine(peeps, $"{series}.txt"));
+
+    if (gen.FindFile(path))
+    {
+        noteToWrite = File.ReadAllLines(gen.GetPath(path))[0];
+
+        gen.Write("What note would you like to make?");
+
+        noteToWrite += "\n\n" + Console.ReadLine();
+
+        gen.WriteToFile(noteToWrite, series, Path.Combine("YoutubeStorage", peeps));
+    }
+    else
+    {
+        Console.WriteLine("something was wrong");
+        Console.WriteLine(path);
+        gen.WaitForInput();
+    }
+
+    Console.Clear();
+}
+
 //main menu
 void MainMenu()
 {
@@ -1009,7 +1067,7 @@ void MainMenu()
     {
         ConsoleKeyInfo key;
 
-        gen.Write("1:Get Link\n2:Store New link\n3:Delete Link\n4:Rename Series\n5:Set Browser\nQ:exit");
+        gen.Write("1:Get Link\n2:Store New link\n3:Add Note\n4:Delete Link\n5:Rename Series\n6:Set Browser\nQ:exit");
         key = Console.ReadKey();
 
         if (key.KeyChar == '1')
@@ -1022,13 +1080,17 @@ void MainMenu()
         }
         else if (key.KeyChar == '3')
         {
-            DeleteLink();
+            AddNote();
         }
         else if (key.KeyChar == '4')
         {
-            RenameFile();
+            DeleteLink();
         }
         else if (key.KeyChar == '5')
+        {
+            RenameFile();
+        }
+        else if (key.KeyChar == '6')
         {
             SetBrowser();
         }
