@@ -164,6 +164,11 @@ string ReadPeepsPages()
             choice = "b";
         }
 
+        else if (keyChar == "a")
+        {
+            choice = "aaaall63672";
+        }
+
         else if(gen.IsInt(keyChar) && searchLines.Length >= keyNum + 1)
         {
             choice = searchLines[pageStart + keyNum];
@@ -598,8 +603,13 @@ void StoreLink()
             gen.Write("Saving Link...");
 
             gen.WriteToFile(link, series, Path.Combine("YoutubeStorage", peeps));
+            if (peeps != "aaaall63672")
+            {
+                gen.WriteToFile(link, peeps + " - " + series, Path.Combine("YoutubeStorage", "aaaall63672"));
+                WriteSeries(peeps + " - " + series, "aaaall63672");
+                WritePeeps(peeps);
+            }
 
-            WritePeeps(peeps);
             WriteSeries(series, peeps);
 
             gen.Write("\nSaved!");
@@ -727,9 +737,16 @@ void DeleteLink()
     if (gen.FindFile(path))
     {
         Console.WriteLine(File.ReadAllText(gen.GetPath(path)));
+
+        if(peeps == "aaaall63672")
+        {
+            Console.WriteLine("Seires deleted from the all series menu won't be deleted from their original channels!");
+        }
+
         if(gen.Sure())
         {
             DeleteSeries(series, peeps);
+            DeleteSeries(peeps + " - " + series, "aaaall63672");
             Console.Clear();
             Console.WriteLine("Deleted");
             gen.WaitForInput();
@@ -1046,9 +1063,15 @@ void AddNote()
 
         gen.Write("What note would you like to make?");
 
+        if (peeps == "aaaall63672")
+        {
+            Console.WriteLine("Notes put on series from the all series menu won't be put on their original channels!");
+        }
+
         noteToWrite += "\n\n" + Console.ReadLine();
 
         gen.WriteToFile(noteToWrite, series, Path.Combine("YoutubeStorage", peeps));
+        gen.WriteToFile(noteToWrite, peeps + " - " + series, Path.Combine("YoutubeStorage", "aaaall63672"));
     }
     else
     {
