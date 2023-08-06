@@ -106,7 +106,7 @@ namespace Youtube_Storage
             }
         }
 
-        public bool FindFile(string path)
+        public bool FindFile(string path) //checks if files exists
         {
             bool found = false;
             var docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);

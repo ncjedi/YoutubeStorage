@@ -126,7 +126,7 @@ string ReadPeepsPages()
     {
         Console.Clear();
         PrintPage(page, searchLines);
-        gen.Write("\nPress a number to select a channel. \npress the left and right arrow keys to change pages. \npress the up arrow key to search. \npress the down arrow key to type a new channel.");
+        gen.Write("\nPress a number to select a channel. \npress the left and right arrow keys to change pages. \npress the up arrow key to search. \npress the down arrow key to type a new channel.\npress the a key to search all series.");
 
         int pageStart = page * 10;
 
@@ -555,6 +555,7 @@ void StoreLink()
     string series = "";
     string time = "";
     string path = "";
+    string printPeeps = "";
 
     bool sure = false;
     bool sureExist = true;
@@ -577,7 +578,16 @@ void StoreLink()
         return;
     }
 
-    gen.Write($"Time:{time}\nLink:{link}\nChannel:{peeps}\nSeries:{series}");
+    if(peeps == "aaaall63672")
+    {
+        printPeeps = "uncategorized";
+    }
+    else
+    {
+        printPeeps = peeps;
+    }
+
+    gen.Write($"Time:{time}\nLink:{link}\nChannel:{printPeeps}\nSeries:{series}");
     sure = gen.Sure("Is this correct?");
 
     Console.Clear();
@@ -1123,6 +1133,47 @@ void MainMenu()
         }
     }
 }
+
+void UpdateAllMenu()
+{
+    string[] peepsLines;
+    string[] seriesLines;
+    string text;
+
+    peepsLines = File.ReadAllLines(gen.GetPath(Path.Combine("YoutubeStorage", "AAApeeps.txt")));
+
+    foreach(string peep in peepsLines)
+    {
+        seriesLines = File.ReadAllLines(gen.GetPath(Path.Combine("YoutubeStorage", peep, "AAAseries.txt")));
+
+        foreach(string series in seriesLines)
+        {
+            WriteSeries(peep + " - " + series, "aaaall63672");
+
+            text = File.ReadAllText(gen.GetPath(Path.Combine("YoutubeStorage", peep, $"{series}.txt")));
+            gen.WriteToFile(text, peep + " - " + series, Path.Combine("YoutubeStorage", "aaaall63672"));
+        }
+    }
+
+    gen.WriteToFile("done", "AAAchecked", Path.Combine("YoutubeStorage", "aaaall63672"));
+}
+
+//Checks if the all menu needs to be updated with old series (should only be the first time a user starts a version past v8 after using the program in a version lower than v8)
+void CheckAllMenu()
+{
+    if (!gen.FindFile(gen.GetPath(Path.Combine("YoutubeStorage", "aaaall63672", "AAAchecked.txt"))))
+    {
+        if (gen.FindFile(gen.GetPath(Path.Combine("YoutubeStorage", "AAApeeps.txt"))))
+        {
+            Console.WriteLine("Loading...");
+            UpdateAllMenu();
+            Console.Clear();
+        }
+    }
+}
+
+//initialize
+CheckAllMenu();
 
 //initial call
 MainMenu();
